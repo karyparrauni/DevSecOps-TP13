@@ -1,0 +1,36 @@
+env:
+  contexts:
+    - name: notes-app-context
+      urls:
+        - "http://localhost:8080" # URL del frontend de la app
+      includePaths:
+         - "http://localhost:8080/.*"
+  parameters:
+     failOnError: true
+     failOnWarning: false
+
+jobs:
+   - type: spider # Descubrimiento de rutas tradicional
+     parameters:
+       context: notes-app-context
+       maxDuration: 2
+
+   - type: spiderAjax # Spider moderno para apps SPA/Flask
+     parameters:
+       context: notes-app-context
+       maxDuration: 2
+
+   - type: passiveScan-wait # Espera que termine el análisis pasivo
+
+   - type: activeScan # Ataques activos (incluye inyecciones y fuzzing)
+     parameters:
+       context: notes-app-context
+       policy: Default Policy
+       maxScanDurationInMins: 5
+
+   - type: report # Generación de reportes automáticos
+     parameters:
+       template: modern # Reporte HTML estético
+       reportDir: /zap/wrk/reports
+       reportFile: zap-report
+       reportTitle: "Notes App - Security Scan Report"

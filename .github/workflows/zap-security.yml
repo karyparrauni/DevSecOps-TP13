@@ -1,0 +1,43 @@
+name: ZAP Security Scan
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Scan the web application
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Levantar la App con Docker Compose
+        run: |
+          docker compose up -d
+          # Esperar a que la app esté lista antes de escanear
+          sleep 30
+
+      - name: ZAP Scan (Automation Framework)
+        uses: zaproxy/action-af@v0.3.0 # Acción oficial para AF
+        with:
+          plan: '.zap/zap-plan.yml' # El plan creado en el Paso 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          # Pasar secretos al contenedor de forma segura
+          docker_env_vars: |
+            APP_USER
+            APP_PASSWORD
+
+      - name: Subir Reporte de Vulnerabilidades
+        if: always() # Subir aunque el escaneo encuentre fallos
+        uses: actions/checkout@v4 # Re-uso para asegurar path
+
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-security-report
+          path: reports/ # Carpeta donde el job 'report' guardó el HTML
+          retention-days: 7
