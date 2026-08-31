@@ -2,15 +2,15 @@ env:
   contexts:
     - name: notes-app-context
       urls:
-        - "http://host.docker.internal"
+        - "http://localhost"
       includePaths:
-        - "http://host.docker.internal/.*"
+        - "http://localhost/.*"
 
       authentication:
         method: json
         parameters:
-          loginPageUrl: "http://host.docker.internal"
-          loginRequestUrl: "http://host.docker.internal/api/login"
+          loginPageUrl: "http://localhost"
+          loginRequestUrl: "http://localhost/api/login"
           loginRequestBody: '{"username":"${ZAP_APP_USER}","password":"${ZAP_APP_PASSWORD}"}'
         verification:
           method: response
