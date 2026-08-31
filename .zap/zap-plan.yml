@@ -2,35 +2,54 @@ env:
   contexts:
     - name: notes-app-context
       urls:
-        - "http://localhost:8080" # URL del frontend de la app
+        - "http://host.docker.internal"
       includePaths:
-         - "http://localhost:8080/.*"
+        - "http://host.docker.internal/.*"
+
+      authentication:
+        method: json
+        parameters:
+          loginPageUrl: "http://host.docker.internal"
+          loginRequestUrl: "http://host.docker.internal/api/login"
+          loginRequestBody: '{"username":"${ZAP_APP_USER}","password":"${ZAP_APP_PASSWORD}"}'
+        verification:
+          method: response
+          loggedInRegex: "autenticación correcta"
+          loggedOutRegex: "autenticación requerida"
+
+      users:
+        - name: zap-user
+          credentials:
+            username: "${ZAP_APP_USER}"
+            password: "${ZAP_APP_PASSWORD}"
+
   parameters:
-     failOnError: true
-     failOnWarning: false
+    failOnError: true
+    failOnWarning: false
 
 jobs:
-   - type: spider # Descubrimiento de rutas tradicional
-     parameters:
-       context: notes-app-context
-       maxDuration: 2
+  - type: spider
+    parameters:
+      context: notes-app-context
+      maxDuration: 2
 
-   - type: spiderAjax # Spider moderno para apps SPA/Flask
-     parameters:
-       context: notes-app-context
-       maxDuration: 2
+  - type: spiderAjax
+    parameters:
+      context: notes-app-context
+      maxDuration: 2
 
-   - type: passiveScan-wait # Espera que termine el análisis pasivo
+  - type: passiveScan-wait
 
-   - type: activeScan # Ataques activos (incluye inyecciones y fuzzing)
-     parameters:
-       context: notes-app-context
-       policy: Default Policy
-       maxScanDurationInMins: 5
+  - type: activeScan
+    parameters:
+      context: notes-app-context
+      user: zap-user
+      policy: Default Policy
+      maxScanDurationInMins: 5
 
-   - type: report # Generación de reportes automáticos
-     parameters:
-       template: modern # Reporte HTML estético
-       reportDir: /zap/wrk/reports
-       reportFile: zap-report
-       reportTitle: "Notes App - Security Scan Report"
+  - type: report
+    parameters:
+      template: modern
+      reportDir: /zap/wrk/reports
+      reportFile: zap-report
+      reportTitle: "Notes App - Security Scan Report"

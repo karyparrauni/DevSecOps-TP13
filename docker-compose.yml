@@ -17,6 +17,8 @@ services:
     build: ./backend
     restart: unless-stopped
     environment:
+      APP_USER: ${APP_USER:-admin}
+      APP_PASSWORD: ${APP_PASSWORD:-}
       DB_HOST: db
       DB_NAME: ${DB_NAME:-notesdb}
       DB_USER: ${DB_USER:-postgres}
@@ -27,7 +29,7 @@ services:
   frontend:
     build: ./frontend
     restart: unless-stopped
-    ports: ["127.0.0.1:${FRONTEND_PORT:-80}:80"]
+    ports: ["${FRONTEND_PORT:-80}:80"]
     depends_on:
       backend: {condition: service_healthy}
     networks: [app]

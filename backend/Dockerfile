@@ -13,5 +13,5 @@ USER appuser
 EXPOSE 5000
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health',timeout=2)"
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["gunicorn","--bind=0.0.0.0:5000","--workers=2","--access-logfile=-","app:app"]
+CMD ["gunicorn","--bind=0.0.0.0:5000","--workers=1","--access-logfile=-","app:app"]
 
