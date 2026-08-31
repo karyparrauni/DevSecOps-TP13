@@ -23,6 +23,11 @@ jobs:
           docker compose up -d
           sleep 30
 
+      - name: Preparar directorio de reportes ZAP
+        run: |
+          mkdir -p reports
+          chmod -R a+rwX reports
+
       - name: ZAP Scan (Automation Framework)
         uses: zaproxy/action-af@v0.3.0
         env:
