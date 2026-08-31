@@ -1,40 +1,60 @@
-# Trabajo Práctico N°13: Gobernanza de Procesos, Automatización y Tríada CIA
+# Trabajo Práctico N°13: DevSecOps — DAST Automatizado con OWASP ZAP y GitHub Actions
 
 ## Descripción General
-Este proyecto implementa la automatización de procesos de mantenimiento, análisis de seguridad y controles de
-acceso bajo la metodología DevSecOps. El objetivo principal es fortalecer la postura de seguridad de la
-aplicación Notes App mediante la integración técnica de la **Tríada CIA** (Confidencialidad, Integridad y
-Disponibilidad) y el principio de **Privilegio Mínimo**.
+Este proyecto implementa la automatización de análisis de seguridad dinámico (DAST), monitoreo de infraestructura y controles de 
+acceso bajo la metodología DevSecOps. El objetivo principal es fortalecer la postura de seguridad de la **Notes App** mediante 
+la integración de OWASP ZAP en el pipeline de CI/CD (GitHub Actions) y el cumplimiento de la Tríada CIA (Confidencialidad, 
+Integridad y Disponibilidad).
+
 ---
-## Vinculación Técnica con la Tríada CIA
+
+## 🔒 Vinculación Técnica con la Tríada CIA
 
 ### 1. Disponibilidad (Availability)
 * **Control técnico:** Script `scripts/sistema.sh` (Reportes de CPU y Disco).
-* **Justificación:** Se implementó un monitoreo preventivo del estado del sistema (`uptime`, `lscpu`, `df -h`)
-para garantizar que el servidor cuente con los recursos de cómputo y almacenamiento necesarios para mantener
- la aplicación operativa sin interrupciones.
+* **Justificación:** Monitoreo preventivo del estado del sistema (`uptime`, `lscpu`, `df -h`) para garantizar la operatividad
+ continua del servidor.
 
 ### 2. Integridad (Integrity)
-* **Control técnico:** Script `scripts/sistema.sh` (Backups automatizados con timestamp).
-* **Justificación:** Se automatizó el respaldo periódico de la base de datos PostgreSQL (`pg_dump`) garantizando
-la consistencia de los datos ante posibles fallos o corrupciones. La política `set -euo pipefail` asegura que el
- script se detenga de inmediato si ocurre un error, evitando la generación de copias incompletas.
+* **Control técnico:** Respaldo automatizado de base de datos y política `set -euo pipefail`.
+* **Justificación:** Automatización de backups de PostgreSQL (`pg_dump`). El control de fallos estricto evita respaldos corruptos
+ o incompletos.
 
 ### 3. Confidencialidad (Confidentiality)
-* **Control técnico:** Restricción de permisos en `/opt/deploy-app/config/app.conf` y segregación de usuarios.
-* **Justificación:** Se asignaron permisos estricto `600` al archivo de configuración sensible para asegurar que
-únicamente el usuario propietario pueda leerlo. Se configuró el usuario de sistema no privilegiado `devops-deploy`
-perteneciente al grupo `deploy-team` para evitar la ejecución de despliegues bajo la cuenta `root`.
----
-## Análisis de Seguridad Manual (Black Box)
-* **Herramienta:** OWASP ZAP (Zaproxy 2.17.0).
-* **Enfoque:** Se realizó un escaneo inicial en modo de exploración manual contra la aplicación en ejecución local
-para identificar vulnerabilidades de aplicación web y errores de configuración en la capa pública antes de avanzar
-en la automatización del pipeline.
----
-## Validación y Auditoría
-El script `scripts/verificar-permisos.sh` actúa como una puerta de calidad (Quality Gate) que valida
-automáticamente en cada ejecución:
-1. Existencia y tamaño del backup base (`notes_db.sql`).
-2. Propietario (`devops-deploy`), grupo (`deploy-team`) y permisos exactos (`600`) del archivo de configuración.
+* **Control técnico:** Permisos estrictos (`600`), usuario `devops-deploy` y gestión de **GitHub Secrets**.
+* **Justificación:** Segregación de privilegios para evitar despliegues como `root`. Además, las credenciales de prueba
+ (`APP_USER`, `APP_PASSWORD`) se inyectan dinámicamente al contenedor de ZAP en GitHub Actions sin exponerlas en el código fuente.
 
+---
+
+## 🛡️ Análisis de Seguridad Dinámico (DAST) con OWASP ZAP
+
+### 1. Escaneo Automatizado en Pipeline (Automation Framework)
+Se integró OWASP ZAP mediante su **Automation Framework (AF)** en el workflow `.github/workflows/zap-security.yml`. Ante cada
+ `push` o `pull_request` en la rama `main`:
+1. GitHub Actions levanta la Notes App usando `docker compose up -d`.
+2. ZAP ejecuta el plan `.zap/zap-plan.yml` que incluye:
+   * **Spider & SpiderAjax:** Descubrimiento de rutas y endpoints de la aplicación.
+   * **Passive Scan:** Verificación pasiva de cabeceras de seguridad y vulnerabilidades conocidas.
+   * **Active Scan:** Ataques dinámicos (Fuzzing, SQL Injection, XSS) sobre los endpoints detectados.
+3. Se genera un reporte estético en HTML guardado como artefacto del pipeline (`zap-security-report`).
+
+---
+
+## 🛠️ Archivos del Proyecto y Estructura
+
+* `.zap/zap-plan.yml`: Definición declarativa de las fases de escaneo de OWASP ZAP.
+* `.github/workflows/zap-security.yml`: Workflow de GitHub Actions para la ejecución automatizada de DAST.
+* `verificar-zap.sh`: Script local para validar la sintaxis del plan de ZAP en Docker antes de subir cambios.
+* `scripts/sistema.sh`: Script de mantenimiento y monitoreo de la infraestructura.
+* `scripts/verificar-permisos.sh`: Auditoría de calidad (*Quality Gate*) de controles CIA.
+
+---
+
+## 🚀 Verificación Local y Ejecución
+
+Para validar la sintaxis del plan de ZAP localmente antes de realizar un commit:
+
+```bash
+chmod +x verificar-zap.sh
+./verificar-zap.sh
