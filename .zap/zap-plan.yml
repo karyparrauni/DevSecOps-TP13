@@ -51,5 +51,5 @@ jobs:
     parameters:
       template: modern
       reportDir: /zap/wrk/reports
-      reportFile: zap-report
+      reportFile: zap-report-ci
       reportTitle: "Notes App - Security Scan Report"
