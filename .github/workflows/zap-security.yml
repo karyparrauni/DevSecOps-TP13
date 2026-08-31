@@ -30,8 +30,6 @@ jobs:
           ZAP_APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         with:
           plan: '.zap/zap-plan.yml'
-          cmd_options: '--add-host=host.docker.internal:host-gateway'
-          token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
           docker_env_vars: |
             ZAP_APP_USER
