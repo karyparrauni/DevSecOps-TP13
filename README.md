@@ -2,9 +2,13 @@ x# Trabajo Práctico N°13: DevSecOps — DAST Automatizado con OWASP ZAP y GitH
 
 ## Descripción General
 
-Este proyecto implementa prácticas de **DevSecOps** sobre la **Notes App**, integrando controles de disponibilidad, integridad y confidencialidad junto con un proceso automatizado de **Dynamic Application Security Testing (DAST)** mediante **OWASP ZAP**.
+Este proyecto implementa prácticas de **DevSecOps** sobre la **Notes App**, integrando controles de disponibilidad,
+integridad y confidencialidad junto con un proceso automatizado de **Dynamic Application Security Testing (DAST)**
+ mediante **OWASP ZAP**.
 
-El objetivo principal del trabajo es incorporar la seguridad dentro del ciclo de integración continua, de manera que cada cambio enviado al repositorio pueda ser evaluado automáticamente mediante un análisis de seguridad de la aplicación en ejecución.
+El objetivo principal del trabajo es incorporar la seguridad dentro del ciclo de integración continua, de manera
+que cada cambio enviado al repositorio pueda ser evaluado automáticamente mediante un análisis de seguridad de la
+aplicación en ejecución.
 
 La solución integra:
 
@@ -40,7 +44,8 @@ lscpu
 df -h
 ```
 
-Estos comandos permiten observar información relacionada con el tiempo de actividad, características del sistema y disponibilidad de espacio en disco.
+Estos comandos permiten observar información relacionada con el tiempo de actividad, características del sistema
+y disponibilidad de espacio en disco.
 
 El objetivo es detectar preventivamente situaciones que puedan afectar la continuidad de los servicios.
 
@@ -63,7 +68,8 @@ El uso de:
 set -euo pipefail
 ```
 
-permite que los scripts fallen ante errores, variables no definidas o errores dentro de pipelines de comandos, reduciendo el riesgo de generar operaciones incompletas o resultados inconsistentes.
+permite que los scripts fallen ante errores, variables no definidas o errores dentro de pipelines de comandos,
+reduciendo el riesgo de generar operaciones incompletas o resultados inconsistentes.
 
 Además, Git permite registrar y controlar los cambios realizados sobre la aplicación, configuraciones y pipeline.
 
@@ -325,7 +331,8 @@ Durante las pruebas también se detectaron recursos adicionales de la aplicació
 
 Esta fase permite completar el procesamiento pasivo de las solicitudes obtenidas durante el descubrimiento.
 
-El análisis pasivo permite identificar problemas que pueden observarse sin realizar ataques activos sobre la aplicación.
+El análisis pasivo permite identificar problemas que pueden observarse sin realizar ataques activos sobre
+la aplicación.
 
 ---
 
@@ -347,7 +354,8 @@ maxScanDurationInMins: 5
 
 Esto permite realizar pruebas activas sobre la aplicación utilizando un usuario autenticado.
 
-El Active Scan puede detectar distintos problemas de seguridad relacionados con entradas y respuestas de la aplicación.
+El Active Scan puede detectar distintos problemas de seguridad relacionados con entradas y respuestas de la
+aplicación.
 
 ---
 
@@ -380,7 +388,8 @@ El usuario utilizado por el Active Scan es:
 zap-user
 ```
 
-De esta manera, ZAP puede realizar análisis sobre recursos protegidos y no solamente sobre la superficie pública de la aplicación.
+De esta manera, ZAP puede realizar análisis sobre recursos protegidos y no solamente sobre la superficie pública
+de la aplicación.
 
 ---
 
@@ -500,7 +509,8 @@ Por lo tanto, el resultado puede consultarse desde la ejecución correspondiente
 
 # 🧪 Verificación local
 
-Antes de utilizar GitHub Actions se realizaron pruebas locales para comprobar el funcionamiento del Automation Framework.
+Antes de utilizar GitHub Actions se realizaron pruebas locales para comprobar el funcionamiento del Automation
+Framework.
 
 ## Ejecutar ZAP instalado localmente
 
@@ -746,7 +756,8 @@ Debe indicar la regla correspondiente de `.gitignore`.
 git diff --cached | grep -niE 'password|token|secret'
 ```
 
-Esta verificación permitió detectar que el reporte HTML generado por ZAP podía contener las credenciales utilizadas durante el análisis.
+Esta verificación permitió detectar que el reporte HTML generado por ZAP podía contener las credenciales
+utilizadas durante el análisis.
 
 Por este motivo el reporte generado localmente no se versiona y se conserva como Artifact del pipeline.
 
@@ -754,7 +765,8 @@ Por este motivo el reporte generado localmente no se versiona y se conserva como
 
 # 🧩 Problemas encontrados y soluciones
 
-Durante el desarrollo se presentaron diferentes inconvenientes que fueron utilizados como parte del proceso de diagnóstico.
+Durante el desarrollo se presentaron diferentes inconvenientes que fueron utilizados como parte del proceso de
+diagnóstico.
 
 ### Sesiones con dos workers de Gunicorn
 
@@ -770,7 +782,8 @@ La sesión se almacenaba en memoria mediante:
 SESSION_TOKEN
 ```
 
-Al existir dos procesos independientes, un login podía ejecutarse en un worker y la siguiente petición llegar a otro proceso sin conocer el token.
+Al existir dos procesos independientes, un login podía ejecutarse en un worker y la siguiente petición llegar a
+otro proceso sin conocer el token.
 
 Se solucionó utilizando:
 
@@ -820,7 +833,8 @@ zaproxy/action-af@v0.3.0
 
 no admite `token` como input.
 
-Por ese motivo se eliminó esa configuración del workflow y se utilizaron únicamente los parámetros soportados por la acción.
+Por ese motivo se eliminó esa configuración del workflow y se utilizaron únicamente los parámetros soportados por
+la acción.
 
 ---
 
@@ -828,7 +842,8 @@ Por ese motivo se eliminó esa configuración del workflow y se utilizaron únic
 
 Durante las pruebas el reporte podía producir conflictos cuando ya existía una salida anterior.
 
-Se utilizó un nombre específico para las ejecuciones del pipeline y se preparó el directorio `reports/` con permisos adecuados antes de ejecutar ZAP.
+Se utilizó un nombre específico para las ejecuciones del pipeline y se preparó el directorio `reports/` con
+permisos adecuados antes de ejecutar ZAP.
 
 ---
 
@@ -864,16 +879,24 @@ GitHub Artifact
 ✅ Workflow exitoso
 ```
 
-La ejecución final de GitHub Actions terminó correctamente, demostrando que la aplicación puede ser levantada y analizada automáticamente como parte del proceso de CI/CD.
+La ejecución final de GitHub Actions terminó correctamente, demostrando que la aplicación puede ser levantada y
+analizada automáticamente como parte del proceso de CI/CD.
 
 ---
 
 # 📌 Conclusión
 
-La implementación permitió integrar la seguridad al ciclo de desarrollo de la Notes App mediante un enfoque DevSecOps. Se pasó de controles principalmente operativos y estáticos a incorporar un análisis dinámico de la aplicación en ejecución.
+La implementación permitió integrar la seguridad al ciclo de desarrollo de la Notes App mediante un enfoque
+DevSecOps. Se pasó de controles principalmente operativos y estáticos a incorporar un análisis dinámico de la
+aplicación en ejecución.
 
-La integración de OWASP ZAP mediante Automation Framework permitió automatizar el descubrimiento de recursos, el análisis pasivo y las pruebas activas, incluyendo el acceso autenticado a los endpoints protegidos.
+La integración de OWASP ZAP mediante Automation Framework permitió automatizar el descubrimiento de recursos, el
+análisis pasivo y las pruebas activas, incluyendo el acceso autenticado a los endpoints protegidos.
 
-El uso de GitHub Secrets permitió mantener separadas las credenciales de la aplicación respecto del código fuente y del pipeline. A su vez, GitHub Actions permitió ejecutar el proceso automáticamente ante cambios en el repositorio y almacenar los resultados como artifacts.
+El uso de GitHub Secrets permitió mantener separadas las credenciales de la aplicación respecto del código fuente
+y del pipeline. A su vez, GitHub Actions permitió ejecutar el proceso automáticamente ante cambios en el
+repositorio y almacenar los resultados como artifacts.
 
-Finalmente, la ejecución exitosa del workflow confirma que el análisis DAST quedó integrado dentro del proceso de CI/CD, proporcionando una base reproducible para detectar problemas de seguridad antes de que los cambios lleguen a etapas posteriores del desarrollo.
+Finalmente, la ejecución exitosa del workflow confirma que el análisis DAST quedó integrado dentro del proceso de
+CI/CD, proporcionando una base reproducible para detectar problemas de seguridad antes de que los cambios lleguen
+ a etapas posteriores del desarrollo.
