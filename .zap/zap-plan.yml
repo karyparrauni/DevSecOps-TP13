@@ -53,3 +53,10 @@ jobs:
       reportDir: /zap/wrk/reports
       reportFile: zap-report-ci
       reportTitle: "Notes App - Security Scan Report"
+
+  - type: report
+    parameters:
+      template: sarif-json
+      reportDir: /zap/wrk/reports
+      reportFile: zap-report-ci.sarif.json
+      reportTitle: "Notes App - Security Scan Report"

@@ -2,4 +2,6 @@
 *.log
 __pycache__/
 *.pyc
-reports/zap-report.html
+
+# Reportes generados por OWASP ZAP
+reports/
