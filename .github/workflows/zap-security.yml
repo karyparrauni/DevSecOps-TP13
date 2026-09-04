@@ -52,8 +52,9 @@ jobs:
           docker run --rm \
             -e ZAP_APP_PASSWORD \
             -v "$PWD:/work" \
+            -w /work \
             python:3.12-alpine \
-            python3 /work/scripts/sanitize_zap_sarif.py
+            python3 scripts/sanitize_zap_sarif.py
 
       - name: Upload Artifact
         if: always()
