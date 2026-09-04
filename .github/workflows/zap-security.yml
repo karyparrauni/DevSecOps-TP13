@@ -44,6 +44,13 @@ jobs:
             ZAP_APP_USER
             ZAP_APP_PASSWORD
 
+      - name: Sanitizar SARIF
+          if: always()
+          env:
+            ZAP_APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+          run: |
+            python3 scripts/sanitize_zap_sarif.py
+
       - name: Upload Artifact
         if: always()
         uses: actions/upload-artifact@v4
