@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     name: Scan the web application
 
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,7 +54,7 @@ jobs:
 
       - name: Upload SARIF file
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: reports/zap-report-ci.sarif.json
           category: zap-dast
