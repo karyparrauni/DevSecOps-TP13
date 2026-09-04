@@ -1,4 +1,4 @@
-x# Trabajo Práctico N°13: DevSecOps — DAST Automatizado con OWASP ZAP y GitHub Actions
+# Trabajo Práctico N°13: DevSecOps — DAST Automatizado con OWASP ZAP y GitHub Actions
 
 ## Descripción General
 
