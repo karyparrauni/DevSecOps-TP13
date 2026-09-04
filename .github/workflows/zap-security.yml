@@ -49,6 +49,8 @@ jobs:
         env:
           ZAP_APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
         run: |
+          chmod -R u+rwX,go+rwX reports
+          ls -lh reports
           python3 scripts/sanitize_zap_sarif.py
 
       - name: Upload Artifact
